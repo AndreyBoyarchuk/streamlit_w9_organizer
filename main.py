@@ -2,7 +2,7 @@ import streamlit as st
 import sqlite3
 import os
 import pandas as pd
-
+import base64
 # Directory for storing uploaded PDFs
 pdfs_directory = './pdfs'
 if not os.path.exists(pdfs_directory):
@@ -70,6 +70,15 @@ def display_profiles():
             st.write("### Profile Details")
             for col in profiles_display_df.columns:
                 st.text(f"{col}: {selected_profile[col]}")
+
+            # Add a download button for the profile's PDF if the path exists
+            signature_path = selected_profile['signature_reference']
+            if signature_path and os.path.isfile(signature_path):
+                with open(signature_path, "rb") as pdf_file:
+                    pdf_bytes = pdf_file.read()
+                    b64 = base64.b64encode(pdf_bytes).decode()
+                    href = f'<a href="data:application/pdf;base64,{b64}" download="{os.path.basename(signature_path)}">Download PDF</a>'
+                    st.markdown(href, unsafe_allow_html=True)
 
 
 
